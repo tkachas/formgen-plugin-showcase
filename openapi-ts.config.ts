@@ -1,5 +1,5 @@
 import { defineConfig } from "@hey-api/openapi-ts";
-import { defineConfig as myDefineConfig } from "./plugins/formgen/index.ts";
+import { defineConfig as formgenDefineConfig } from "./plugins/formgen/index.ts";
 
 export default defineConfig({
   input: "./openapi.yaml",
@@ -8,7 +8,7 @@ export default defineConfig({
     {
       name: "@hey-api/typescript",
     },
-    myDefineConfig({
+    formgenDefineConfig({
       targetSchemas: {
         CreateEmployeeDto: { excludeFields: ['id'] },
         CreateCompanyDto: { excludeFields: ['id'] },
