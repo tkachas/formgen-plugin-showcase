@@ -7,8 +7,8 @@ yarn.lock
 dist/
 .rsbuild/
 
-# Generated files
-src/client/
+# # Generated files
+# src/client/
 
 # IDE
 .vscode/
