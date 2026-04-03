@@ -1,0 +1,414 @@
+openapi: 3.0.3
+info:
+  title: Form Generator Test API
+  version: 1.0.0
+  description: >
+    Тестовая OpenAPI-спецификация для проверки formgen-плагина
+    на базе hey-api/openapi-ts + react-jsonschema-form.
+
+paths:
+  /employees:
+    post:
+      summary: Create employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployeeDto'
+      responses:
+        '200':
+          description: Employee created
+
+  /companies:
+    post:
+      summary: Create company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyDto'
+      responses:
+        '200':
+          description: Company created
+
+  /projects:
+    post:
+      summary: Create project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectDto'
+      responses:
+        '200':
+          description: Project created
+
+components:
+  schemas:
+    AddressDto:
+      type: object
+      required:
+        - country
+        - city
+        - street
+        - house
+      properties:
+        country:
+          type: string
+          example: Russia
+        city:
+          type: string
+          example: Moscow
+        street:
+          type: string
+          example: Tverskaya
+        house:
+          type: string
+          example: 10
+        postalCode:
+          type: string
+          example: 101000
+        districtId:
+          type: string
+          format: uuid
+          description: UUID справочника района
+
+    PassportDto:
+      type: object
+      required:
+        - series
+        - number
+        - issueDate
+      properties:
+        series:
+          type: string
+          example: 4510
+        number:
+          type: string
+          example: 123456
+        issueDate:
+          type: string
+          format: date
+        issuedBy:
+          type: string
+        scan:
+          type: string
+          format: binary
+          description: Один файл для проверки fileUpload
+        attachments:
+          type: array
+          description: Массив файлов для проверки "сжатия" массива binary
+          items:
+            type: string
+            format: binary
+
+    ContactInfoDto:
+      type: object
+      required:
+        - email
+        - phone
+      properties:
+        email:
+          type: string
+          example: user@example.com
+        phone:
+          type: string
+          example: "+79991234567"
+        telegram:
+          type: string
+          example: "@tester"
+
+    EmergencyContactDto:
+      type: object
+      required:
+        - fullName
+        - phone
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        relation:
+          type: string
+          enum:
+            - parent
+            - spouse
+            - sibling
+            - friend
+
+    EducationDto:
+      type: object
+      required:
+        - institution
+        - graduationDate
+      properties:
+        institution:
+          type: string
+        faculty:
+          type: string
+        graduationDate:
+          type: string
+          format: date
+        diplomaFile:
+          type: string
+          format: binary
+
+    SkillDto:
+      type: object
+      required:
+        - name
+        - level
+      properties:
+        name:
+          type: string
+        level:
+          type: string
+          enum:
+            - junior
+            - middle
+            - senior
+            - expert
+        certificateId:
+          type: string
+          format: uuid
+
+    RepresentativeDto:
+      type: object
+      required:
+        - id
+        - fullName
+        - powerOfAttorneyFile
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        position:
+          type: string
+        powerOfAttorneyFile:
+          type: string
+          format: binary
+        allowedProjectIds:
+          type: array
+          description: Массив UUID для проверки uuidSelect + compression
+          items:
+            type: string
+            format: uuid
+
+    CreateEmployeeDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - birthDate
+        - employeeType
+        - departmentId
+        - address
+        - passport
+        - contactInfo
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Можно исключать через excludeFields
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        employeeType:
+          type: string
+          enum:
+            - office
+            - remote
+            - hybrid
+        active:
+          type: boolean
+        salary:
+          type: number
+          format: double
+        experienceYears:
+          type: integer
+          format: int32
+        departmentId:
+          type: string
+          format: uuid
+        managerId:
+          type: string
+          format: uuid
+        mentorIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        avatar:
+          type: string
+          format: binary
+        certificates:
+          type: array
+          items:
+            type: string
+            format: binary
+        address:
+          $ref: '#/components/schemas/AddressDto'
+        passport:
+          $ref: '#/components/schemas/PassportDto'
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfoDto'
+        emergencyContacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmergencyContactDto'
+        educations:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationDto'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDto'
+        preferredWorkspace:
+          anyOf:
+            - type: string
+              enum: [office, home, coworking]
+            - type: string
+              format: uuid
+              description: UUID офиса из справочника
+
+    CreateCompanyDto:
+      type: object
+      required:
+        - companyName
+        - registrationNumber
+        - registrationDate
+        - legalAddress
+        - representatives
+      properties:
+        id:
+          type: string
+          format: uuid
+        companyName:
+          type: string
+        shortName:
+          type: string
+        registrationNumber:
+          type: string
+        taxNumber:
+          type: string
+        registrationDate:
+          type: string
+          format: date
+        companyType:
+          type: string
+          enum:
+            - llc
+            - jsc
+            - sole_proprietor
+        logo:
+          type: string
+          format: binary
+        legalAddress:
+          $ref: '#/components/schemas/AddressDto'
+        actualAddress:
+          $ref: '#/components/schemas/AddressDto'
+        representatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepresentativeDto'
+        responsibleEmployeeId:
+          type: string
+          format: uuid
+        relatedCompanyIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    ProjectDocumentDto:
+      type: object
+      required:
+        - title
+        - file
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        file:
+          type: string
+          format: binary
+        tagIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    CreateProjectDto:
+      type: object
+      required:
+        - name
+        - startDate
+        - ownerId
+        - companyId
+        - documents
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+            - draft
+            - active
+            - archived
+        budget:
+          type: number
+          format: double
+        ownerId:
+          type: string
+          format: uuid
+        reviewerIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        companyId:
+          type: string
+          format: uuid
+        teamMemberIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        coverImage:
+          type: string
+          format: binary
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectDocumentDto'
+        executionMode:
+          anyOf:
+            - type: string
+              enum: [internal, outsource]
+            - type: string
+              format: uuid
+              description: UUID внешнего подрядчика
